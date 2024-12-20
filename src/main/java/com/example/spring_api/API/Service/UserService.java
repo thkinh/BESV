@@ -31,7 +31,7 @@ public class UserService {
     }
 
     public String getUsernameByEmail(String email) {
-        AppUser user = userRepository.findByEmail(email);
+        AppUser user = userRepository.findNameByEmail(email);
         if (user != null) {
             return user.getUsername(); // Return the username if the user is found
         } else {
@@ -39,12 +39,16 @@ public class UserService {
         }
     }
 
+    public Optional<AppUser> getUserByEmail(String email){
+        return userRepository.findByEmail(email);
+    }
+
     public Optional<AppUser> getUserByUsername(String username){
         return userRepository.findByUsername(username);
     }
 
     public Integer getIDbyEmail(String email) {
-        AppUser user = userRepository.findByEmail(email);
+        AppUser user = userRepository.findNameByEmail(email);
         if (user != null) {
             return user.getId();
         }

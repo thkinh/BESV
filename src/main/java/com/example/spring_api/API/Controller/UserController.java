@@ -30,6 +30,17 @@ public class UserController {
         this.mailService = mailService;
     }
 
+    @GetMapping("/getByEmail")
+    public ResponseEntity<AppUser> getMethodName(@RequestParam(name = "email") String email) {
+        Optional<AppUser> user = userService.getUserByEmail(email);
+        if (user.isPresent()) {
+            return ResponseEntity.ok(user.get());
+        }
+        else{
+            return ResponseEntity.status(504).body(null);
+        }}
+    
+
     @GetMapping("/getByName")
     public ResponseEntity<AppUser> getUserByName(@RequestParam(name = "name") String name){
         Optional<AppUser> user = userService.getUserByUsername(name);
@@ -37,7 +48,7 @@ public class UserController {
             return ResponseEntity.ok(user.get());
         }
         else{
-            return ResponseEntity.status(500).body(null);
+            return ResponseEntity.status(504).body(null);
         }
     }
 
@@ -49,7 +60,7 @@ public class UserController {
         if (user.isPresent()) {
             return ResponseEntity.ok(user.get()); // Return 200 OK with user data
         } else {
-            return ResponseEntity.status(404).body(null); // Return 404 Not Found if the user does not exist
+            return ResponseEntity.status(504).body(null); // Return 404 Not Found if the user does not exist
         }
     }
 
@@ -59,7 +70,7 @@ public class UserController {
         if (username != null) {
             return ResponseEntity.ok(username); // Return the username if found
         } else {
-            return ResponseEntity.status(404).body("User not found"); // Return 404 if no user found
+            return ResponseEntity.status(504).body("User not found"); // Return 404 if no user found
         }
     }
 
@@ -69,7 +80,7 @@ public class UserController {
         if (id != 0) {
             return ResponseEntity.ok(id);
         }
-        return ResponseEntity.status(404).body(0);
+        return ResponseEntity.status(500).body(0);
     }
 
     @PostMapping("/password/confirm")
@@ -120,7 +131,7 @@ public class UserController {
             return ResponseEntity.status(201).body(createdUser);  // Return 201 with the created user
         } 
         catch (DataIntegrityViolationException e) {
-            return ResponseEntity.status(400).body("User already exists with this email.");  
+            return ResponseEntity.status(500).body("User already exists with this email.");  
         } 
         catch (Exception e) {
             return ResponseEntity.status(500).body("An error occurred while creating the user: " + e.getMessage()); 
