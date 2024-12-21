@@ -1,5 +1,6 @@
 package com.example.spring_api.API.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 //import java.util.Optional;
@@ -12,8 +13,6 @@ import com.example.spring_api.API.Model.UnverifiedUser;
 import com.example.spring_api.API.Repository.UnverifiedUserRepository;
 import com.example.spring_api.API.Repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.*;
-import java.util.List;
-
 
 @Service
 public class UserService {
@@ -46,7 +45,7 @@ public class UserService {
     }
 
     public List<AppUser> getAllUser(){
-        return userRepository.getAppUsers();
+        return userRepository.findAll();
     }
 
     public Optional<AppUser> getUserByEmail(String email){
@@ -67,6 +66,7 @@ public class UserService {
 
     public AppUser addUser(AppUser user) {
         user.setPassword(BCrypt.hashpw(user.getPassword(), salt));
+        user.setSalt(salt);
         return userRepository.save(user); // Save user to the database
     }
 

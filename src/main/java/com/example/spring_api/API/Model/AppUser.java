@@ -39,8 +39,30 @@ public class AppUser {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "settingID", referencedColumnName = "id")
+
     @JsonIgnore
     private UserSetting setting;
+
+    private Long DistanceTraveled;
+
+    @JsonIgnore
+    private String salt;
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
+
+    public Long getDistanceTraveled() {
+        return DistanceTraveled;
+    }
+
+    public void setDistanceTraveled(Long distanceTraveled) {
+        DistanceTraveled = distanceTraveled;
+    }
 
     public List<Pothole> getPotholes() {
         return potholes;

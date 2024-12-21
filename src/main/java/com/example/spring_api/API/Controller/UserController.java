@@ -3,9 +3,9 @@ package com.example.spring_api.API.Controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.spring_api.API.Model.AppUser;
-import com.example.spring_api.API.Model.Pothole;
 import com.example.spring_api.API.Model.UnverifiedUser;
 import com.example.spring_api.API.Service.MailService;
+import com.example.spring_api.API.Service.RandomGenerator;
 import com.example.spring_api.API.Service.UserService;
 
 import java.util.List;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import java.util.UUID;
+
 
 
 @RestController
@@ -92,7 +92,7 @@ public class UserController {
     public ResponseEntity<AppUser> SIRequest(@RequestParam(name = "email") String email, @RequestParam(name = "password") String password) {
         Optional<AppUser> user = userService.getUserByEmail(email);
         if (user.isPresent()) {
-            String encrypted_pass = BCrypt.hashpw(password, userService.getSalt());
+            String encrypted_pass = BCrypt.hashpw(password, user.get().getSalt());
             if (encrypted_pass.equals(user.get().getPassword()))
             {
                 return ResponseEntity.ok(user.get()); // Return 200 OK with user data    
@@ -138,9 +138,9 @@ public class UserController {
 
     @PostMapping("/password/getVerify")
     public ResponseEntity<String> getVerifyCode(@RequestParam(name = "email") String email) {
-        String verifyCode = UUID.randomUUID().toString();
+        String verifyCode = RandomGenerator.generateRandomString(6);
         try {
-            Boolean isSent = mailService.sendEmail(email);
+            Boolean isSent = mailService.sendCode(email, verifyCode);
             if (isSent) {
                 UnverifiedUser user = new UnverifiedUser();
                 user.setEmail(email);
@@ -157,7 +157,7 @@ public class UserController {
     @PostMapping("/add")
     public ResponseEntity<?> addUser(@RequestBody AppUser user) {
         try {
-            Boolean isSent = mailService.sendEmail(user.getEmail());
+            Boolean isSent = mailService.signUpNotification(user.getEmail());
             if (isSent) {
                 AppUser createdUser = userService.addUser(user);
                 return ResponseEntity.status(200).body(createdUser);  // Return 201 with the created user    

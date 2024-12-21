@@ -24,7 +24,7 @@ public class PotholeService {
     }
 
     public List<Pothole> getAllPotholes(){
-        return potholeRepository.findAllPotholes();
+        return potholeRepository.findAll();
     }
 
     public Optional<Pothole> getPothole(Integer id) {
