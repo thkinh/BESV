@@ -81,4 +81,16 @@ public class UserService {
     public Optional<UnverifiedUser> getUnverifiedUser(String email) {
         return unverifiedUserRepository.findByEmail(email);
     }
+
+    public AppUser updatePassword(String email, String newPassword) {
+        Optional<AppUser> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()) {
+            AppUser user = userOptional.get();
+            user.setPassword(newPassword); 
+            userRepository.save(user);   
+            return user; // Return the updated user
+        }
+        return null; // Return null if user is not found
+    }
+    
 }

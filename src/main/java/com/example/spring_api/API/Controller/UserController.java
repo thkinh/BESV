@@ -42,7 +42,8 @@ public class UserController {
         }
         else{
             return ResponseEntity.status(504).body(null);
-        }}
+        }
+    }
     
 
     @GetMapping("/getByName") //return app user, used for ez get method
@@ -103,57 +104,7 @@ public class UserController {
         }   
     }
 
-    @GetMapping("get/ALL")
-    public ResponseEntity<List<AppUser>> getAllUser() {
-        List<AppUser> users = userService.getAllUser();
-        if (!users.isEmpty()) {
-            return ResponseEntity.ok(users);
-        }
-        return ResponseEntity.status(504).body(null);
-    }
     
-
-    @PostMapping("/password/confirm")
-    public ResponseEntity<String> confirmPassword(@RequestParam String email, @RequestParam String verify_code) {
-        try {
-            Optional<UnverifiedUser> user = userService.getUnverifiedUser(email);
-            if (user.isPresent() && !user.get().isConfirmed()) {
-                UnverifiedUser unverifiedUser = user.get();
-                
-                if (verify_code.equals(unverifiedUser.getvCode())) {
-                    unverifiedUser.setConfirmed(true); // Update the entity's state
-                    userService.saveUnverifiedUser(unverifiedUser); // Save the updated entity to the database
-                    return ResponseEntity.status(200).body("Confirmed");
-                } else {
-                    return ResponseEntity.status(500).body("Your verify code was wrong");
-                }
-            }
-            
-            return ResponseEntity.status(500).body("No match for this unverified user");
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("An error occurred: " + e.getMessage());
-        }
-    }
-    
-
-    @PostMapping("/password/getVerify")
-    public ResponseEntity<String> getVerifyCode(@RequestParam(name = "email") String email) {
-        String verifyCode = RandomGenerator.generateRandomString(6);
-        try {
-            Boolean isSent = mailService.sendCode(email, verifyCode);
-            if (isSent) {
-                UnverifiedUser user = new UnverifiedUser();
-                user.setEmail(email);
-                user.setvCode(verifyCode);
-                userService.addUnverifiedUser(user);
-                return ResponseEntity.status(200).body(user.getId().toString());
-            }
-            return ResponseEntity.status(500).body("Couldn't send the email to client");
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(e.getMessage());
-        }
-    }
-
     @PostMapping("/add")
     public ResponseEntity<?> addUser(@RequestBody AppUser user) {
         try {
@@ -171,7 +122,72 @@ public class UserController {
             return ResponseEntity.status(504).body("An error occurred while creating the user: " + e.getMessage()); 
         }
     }
+
+    @GetMapping("get/ALL")
+    public ResponseEntity<List<AppUser>> getAllUser() {
+        List<AppUser> users = userService.getAllUser();
+        if (!users.isEmpty()) {
+            return ResponseEntity.ok(users);
+        }
+        return ResponseEntity.status(504).body(null);
+    }
     
+    
+    @PostMapping("/password/getVerify")
+    public ResponseEntity<String> getVerifyCode(@RequestParam(name = "email") String email) {
+        String verifyCode = RandomGenerator.generateRandomString(6);
+        String existEmail = email.replace("\"", "");
+        try {
+            Optional<AppUser> appUser = userService.getUserByEmail(existEmail);
+            if (!appUser.isPresent()) {
+                System.out.println(existEmail);
+                Integer errorCode = -1;
+                return ResponseEntity.status(501).body(errorCode.toString());
+            }
+            Boolean isSent = mailService.sendCode(email, verifyCode);
+            if (isSent) {
+                UnverifiedUser user = new UnverifiedUser();
+                user.setEmail(email);
+                user.setvCode(verifyCode);
+                userService.addUnverifiedUser(user);
+                return ResponseEntity.status(200).body(user.getId().toString());
+            }
+            return ResponseEntity.status(502).body("Couldn't send email to client");
+        } catch (Exception e) {
+            return ResponseEntity.status(504).body(e.getMessage());
+        }
+    }
+
+    //verify OTP code
+    @PostMapping("/password/OTPConfirm")
+    public ResponseEntity<String> verifyOTP(@RequestParam String email, @RequestParam(name = "code") String verify_code) {
+        try {
+            Optional<UnverifiedUser> user = userService.getUnverifiedUser(email);
+            if (user.isPresent() && !user.get().isConfirmed()) {
+                UnverifiedUser unverifiedUser = user.get();
+                if (verify_code.equals(unverifiedUser.getvCode())) {
+                    unverifiedUser.setConfirmed(true); // Update the entity's state
+                    userService.saveUnverifiedUser(unverifiedUser); // Save the updated entity to the database
+                    return ResponseEntity.ok("0");
+                } else {
+                    return ResponseEntity.status(501).body("Your verified code was wrong");
+                }
+            }
+            return ResponseEntity.status(502).body("No match for this unverified user\n" + "User:" + email + "/code:" + verify_code);
+        } catch (Exception e) {
+            return ResponseEntity.status(504).body("An error occurred: " + e.getMessage());
+        }
+    }
+        
+    @PostMapping("/password/confirm")
+    public ResponseEntity<?> getUpdatedUser(@RequestParam String email, @RequestParam String password) {
+        AppUser updatedUser = userService.updatePassword(email, password);
+        if (updatedUser != null) {
+            return ResponseEntity.ok(updatedUser); // Return updated user in the response
+        } else {
+            return ResponseEntity.status(504).body("User not found");
+        }
+    }
 
     @GetMapping("/FuckYou")
     public String getFuckYou(@RequestParam(name = "name") String param) {
