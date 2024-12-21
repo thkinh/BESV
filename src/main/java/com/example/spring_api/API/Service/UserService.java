@@ -12,6 +12,8 @@ import com.example.spring_api.API.Model.UnverifiedUser;
 import com.example.spring_api.API.Repository.UnverifiedUserRepository;
 import com.example.spring_api.API.Repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.*;
+import java.util.List;
+
 
 @Service
 public class UserService {
@@ -23,6 +25,10 @@ public class UserService {
     private String salt = BCrypt.gensalt();
 
     public UserService() {
+    }
+
+    public String getSalt(){
+        return salt;
     }
 
     public Optional<AppUser> getUserByID(Integer id) {
@@ -37,6 +43,10 @@ public class UserService {
         } else {
             return null; // Return null if the user is not found
         }
+    }
+
+    public List<AppUser> getAllUser(){
+        return userRepository.getAppUsers();
     }
 
     public Optional<AppUser> getUserByEmail(String email){

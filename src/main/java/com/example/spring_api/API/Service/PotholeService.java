@@ -23,6 +23,10 @@ public class PotholeService {
         this.userRepository = appUserRepository;
     }
 
+    public List<Pothole> getAllPotholes(){
+        return potholeRepository.findAllPotholes();
+    }
+
     public Optional<Pothole> getPothole(Integer id) {
         return potholeRepository.findById(id);
     }

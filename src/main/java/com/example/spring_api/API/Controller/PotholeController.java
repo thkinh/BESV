@@ -37,6 +37,15 @@ public class PotholeController {
         return ResponseEntity.status(404).body(null);
     }
 
+    @GetMapping("get/ALL")
+    public ResponseEntity<List<Pothole>> getALL() {
+        List<Pothole> potholes = potholeService.getAllPotholes();
+        if (!potholes.isEmpty()) {
+            return ResponseEntity.ok(potholes);
+        }
+        return ResponseEntity.status(504).body(null);
+    }
+
     @GetMapping("get")
     public ResponseEntity<List<Pothole>> getPothole(@RequestParam(name = "user") String username){
         List<Pothole> potholes = potholeService.getPotholesByUsername(username);
@@ -44,7 +53,7 @@ public class PotholeController {
         if (!potholes.isEmpty()) {
             return ResponseEntity.ok(potholes);
         }
-        return ResponseEntity.status(404).body(null);
+        return ResponseEntity.status(504).body(null);
     }
 
     @PostMapping("add")
