@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.Time;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
@@ -27,6 +28,8 @@ public class Pothole {
     private Time timeFound;
     private String severity;
 
+    
+
     @Embedded
     private Location location;
     @Embedded
@@ -35,6 +38,7 @@ public class Pothole {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uID", nullable = false)
     @JsonBackReference 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private AppUser appUser; 
 
     public AppUser getAppUser() {

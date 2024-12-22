@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.spring_api.API.Model.AppUser;
 import com.example.spring_api.API.Model.Pothole;
+import com.example.spring_api.API.Model.PotholeProjection;
 import com.example.spring_api.API.Repository.PotholeRepository;
 import com.example.spring_api.API.Repository.UserRepository;
 
@@ -25,6 +26,10 @@ public class PotholeService {
 
     public List<Pothole> getAllPotholes(){
         return potholeRepository.findAll();
+    }
+
+    public List<PotholeProjection> getALLPotholesWithID(){
+        return potholeRepository.findAllWithUserId();
     }
 
     public Optional<Pothole> getPothole(Integer id) {

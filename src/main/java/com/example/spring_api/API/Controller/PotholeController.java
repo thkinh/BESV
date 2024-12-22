@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.spring_api.API.Model.Pothole;
+import com.example.spring_api.API.Model.PotholeProjection;
 import com.example.spring_api.API.Service.PotholeService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,8 +39,8 @@ public class PotholeController {
     }
 
     @GetMapping("get/ALL")
-    public ResponseEntity<List<Pothole>> getALL() {
-        List<Pothole> potholes = potholeService.getAllPotholes();
+    public ResponseEntity<List<PotholeProjection>> getALL() {
+        List<PotholeProjection> potholes = potholeService.getALLPotholesWithID();
         if (!potholes.isEmpty()) {
             return ResponseEntity.ok(potholes);
         }
@@ -57,13 +58,15 @@ public class PotholeController {
     }
 
     @PostMapping("add")
-    public String addPothole(@RequestBody Pothole pothole) {
+    public ResponseEntity<Pothole> addPothole(@RequestBody Pothole pothole) {
         try {
-            potholeService.addPothole(pothole);
-            return "pothole_added";
+            Pothole pothole2 = potholeService.addPothole(pothole);
+            return ResponseEntity.ok(pothole2);
         }
-        catch(Exception e){
-            return e.getMessage();
+        catch(Exception e){ 
+            return ResponseEntity.status(504).body(pothole);
         }
     }
+
+    
 }

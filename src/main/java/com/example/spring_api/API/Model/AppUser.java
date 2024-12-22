@@ -29,6 +29,7 @@ public class AppUser {
 
     @Column(unique = true)
     private String email;
+
     private String password;
     private Date date_created;
 
@@ -44,17 +45,6 @@ public class AppUser {
     private UserSetting setting;
 
     private Long DistanceTraveled;
-
-    @JsonIgnore
-    private String salt;
-
-    public String getSalt() {
-        return salt;
-    }
-
-    public void setSalt(String salt) {
-        this.salt = salt;
-    }
 
     public Long getDistanceTraveled() {
         return DistanceTraveled;

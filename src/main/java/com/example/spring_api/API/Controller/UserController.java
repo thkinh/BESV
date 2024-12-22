@@ -93,8 +93,7 @@ public class UserController {
     public ResponseEntity<AppUser> SIRequest(@RequestParam(name = "email") String email, @RequestParam(name = "password") String password) {
         Optional<AppUser> user = userService.getUserByEmail(email);
         if (user.isPresent()) {
-            String encrypted_pass = BCrypt.hashpw(password, user.get().getSalt());
-            if (encrypted_pass.equals(user.get().getPassword()))
+            if(BCrypt.checkpw(password, user.get().getPassword()))
             {
                 return ResponseEntity.ok(user.get()); // Return 200 OK with user data    
             }
@@ -113,10 +112,10 @@ public class UserController {
                 AppUser createdUser = userService.addUser(user);
                 return ResponseEntity.status(200).body(createdUser);  // Return 201 with the created user    
             }
-            return ResponseEntity.status(501).body("Couldn't send Verify code to your email");
+            return ResponseEntity.status(501).body(null); //Could not verify email
         } 
         catch (DataIntegrityViolationException e) {
-            return ResponseEntity.status(502).body("User already exists with this email.");  
+            return ResponseEntity.status(502).body(null);  //User already exists with this email.
         } 
         catch (Exception e) {
             return ResponseEntity.status(504).body("An error occurred while creating the user: " + e.getMessage()); 
@@ -183,6 +182,8 @@ public class UserController {
     public ResponseEntity<?> getUpdatedUser(@RequestParam String email, @RequestParam String password) {
         AppUser updatedUser = userService.updatePassword(email, password);
         if (updatedUser != null) {
+            String trueMail = "\""+email+ "\"";
+            userService.deleteUnverifiedByEmail(trueMail);
             return ResponseEntity.ok(updatedUser); // Return updated user in the response
         } else {
             return ResponseEntity.status(504).body("User not found");

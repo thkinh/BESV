@@ -66,7 +66,6 @@ public class UserService {
 
     public AppUser addUser(AppUser user) {
         user.setPassword(BCrypt.hashpw(user.getPassword(), salt));
-        user.setSalt(salt);
         return userRepository.save(user); // Save user to the database
     }
 
@@ -80,6 +79,14 @@ public class UserService {
 
     public Optional<UnverifiedUser> getUnverifiedUser(String email) {
         return unverifiedUserRepository.findByEmail(email);
+    }
+
+    public void deleteConfirmedUsers() {
+        unverifiedUserRepository.deleteByIsConfirmed(true);
+    }
+
+    public void deleteUnverifiedByEmail(String email){
+        unverifiedUserRepository.deleteByEmail(email);
     }
 
     public AppUser updatePassword(String email, String newPassword) {
