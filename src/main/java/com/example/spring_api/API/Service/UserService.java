@@ -100,4 +100,8 @@ public class UserService {
         return null; // Return null if user is not found
     }
     
+
+    public Integer updateDistance(Integer id, Long DistanceTraveled){
+        return userRepository.addDistanceByID(id, DistanceTraveled);
+    }
 }

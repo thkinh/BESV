@@ -45,6 +45,19 @@ public class UserController {
         }
     }
     
+    @PostMapping("/updateDistance")
+    public ResponseEntity<Integer> postMethodName(@RequestParam(name ="id") Integer id, @RequestParam(name = "distance") Long distance) {
+
+        Optional<AppUser> user = userService.getUserByID(id);
+        if (user.isPresent()) {
+            userService.updateDistance(id, distance);
+            return ResponseEntity.status(200).body(user.get().getId());
+        }
+
+        return ResponseEntity.status(504).body(null);
+    }
+    
+
 
     @GetMapping("/getByName") //return app user, used for ez get method
     public ResponseEntity<AppUser> getUserByName(@RequestParam(name = "name") String name){
