@@ -4,8 +4,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.spring_api.API.Model.AppUser;
 import com.example.spring_api.API.Model.UnverifiedUser;
+import com.example.spring_api.API.Model.UserDetails;
 import com.example.spring_api.API.Service.MailService;
 import com.example.spring_api.API.Service.RandomGenerator;
+import com.example.spring_api.API.Service.UserDetailsService;
 import com.example.spring_api.API.Service.UserService;
 
 import java.util.List;
@@ -26,13 +28,46 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/api/user")
 public class UserController {
 
-    private final UserService userService;
-    private final MailService mailService;
+    private final UserService           userService;
+    private final UserDetailsService    userDetailsService;
+    private final MailService           mailService;
 
-    public UserController(UserService userService, MailService mailService) {
+    public UserController(UserService userService, MailService mailService, UserDetailsService userDetailsService) {
         this.userService = userService;
         this.mailService = mailService;
+        this.userDetailsService = userDetailsService;
     }
+
+    @GetMapping("/details")
+    public ResponseEntity<UserDetails> getUserDetails(@RequestParam Integer id) {
+        
+        Optional<UserDetails> details = userDetailsService.getUserDetailsById(id);
+        if (details.isPresent()) {
+            return ResponseEntity.status(200).body(details.get());
+        }
+        return ResponseEntity.status(504).body(null);
+    }
+
+    @PostMapping("/details/update")
+    public ResponseEntity<UserDetails> updateUserDetails(
+            @RequestParam("uID") Integer userId, @RequestBody UserDetails details) {
+        try {
+            // Validate input, make sure necessary fields are not null
+            if (userId == null || details == null) {
+                return ResponseEntity.badRequest().body(null);
+            }
+            // Update the UserDetails and associate it with the AppUser
+            UserDetails updatedDetails = userDetailsService.updateUserDetails(userId, details);
+            // Return the updated UserDetails
+            return ResponseEntity.ok(updatedDetails);
+        } catch (Exception e) {
+            // Handle any errors
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+    
+    
+
 
     @GetMapping("/getByEmail") //return app user, used by old login
     public ResponseEntity<AppUser> getMethodName(@RequestParam(name = "email") String email) {
@@ -44,7 +79,9 @@ public class UserController {
             return ResponseEntity.status(504).body(null);
         }
     }
-    
+
+
+
     @PostMapping("/updateDistance")
     public ResponseEntity<Integer> postMethodName(@RequestParam(name ="id") Integer id, @RequestParam(name = "distance") Long distance) {
 
@@ -122,6 +159,7 @@ public class UserController {
     @PostMapping("/add")
     public ResponseEntity<?> addUser(@RequestBody AppUser user) {
         try {
+            user.setDetails(new UserDetails());
             AppUser createdUser = userService.addUser(user);
             Boolean isSent = mailService.signUpNotification(user.getEmail());
             if (isSent) {

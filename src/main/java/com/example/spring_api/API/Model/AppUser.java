@@ -41,7 +41,15 @@ public class AppUser {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "detailsID", referencedColumnName = "id")
     @JsonIgnore
-    private UserDetails setting;
+    private UserDetails details;
+
+    public UserDetails getDetails() {
+        return details;
+    }
+
+    public void setDetails(UserDetails details) {
+        this.details = details;
+    }
 
     private Long DistanceTraveled;
 

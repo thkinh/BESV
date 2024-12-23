@@ -21,6 +21,8 @@ public class UserService {
     private UserRepository userRepository;
     @Autowired
     private UnverifiedUserRepository unverifiedUserRepository;
+
+
     private String salt = BCrypt.gensalt();
 
     public UserService() {

@@ -2,6 +2,7 @@ package com.example.spring_api.API.Model;
 
 import java.sql.Date;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -18,12 +19,19 @@ public class UserDetails {
     
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private Integer id;
 
-    @OneToOne(mappedBy = "setting")
+    @OneToOne(mappedBy = "details")
+    @JsonBackReference
     @JsonIgnore
     private AppUser thisAppUser;
 
+    public AppUser getThisAppUser() {
+        return thisAppUser;
+    }
+    public void setThisAppUser(AppUser thisAppUser) {
+        this.thisAppUser = thisAppUser;
+    }
     @Column(unique = true)    
     private String email;
     private String phoneNumber;
