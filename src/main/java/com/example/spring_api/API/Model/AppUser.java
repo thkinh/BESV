@@ -39,10 +39,9 @@ public class AppUser {
     private List<Pothole> potholes;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "settingID", referencedColumnName = "id")
-
+    @JoinColumn(name = "detailsID", referencedColumnName = "id")
     @JsonIgnore
-    private UserSetting setting;
+    private UserDetails setting;
 
     private Long DistanceTraveled;
 
