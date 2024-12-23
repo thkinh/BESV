@@ -107,9 +107,9 @@ public class UserController {
     @PostMapping("/add")
     public ResponseEntity<?> addUser(@RequestBody AppUser user) {
         try {
+            AppUser createdUser = userService.addUser(user);
             Boolean isSent = mailService.signUpNotification(user.getEmail());
             if (isSent) {
-                AppUser createdUser = userService.addUser(user);
                 return ResponseEntity.status(200).body(createdUser);  // Return 201 with the created user    
             }
             return ResponseEntity.status(501).body(null); //Could not verify email

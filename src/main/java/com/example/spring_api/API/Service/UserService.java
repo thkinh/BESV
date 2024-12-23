@@ -93,7 +93,7 @@ public class UserService {
         Optional<AppUser> userOptional = userRepository.findByEmail(email);
         if (userOptional.isPresent()) {
             AppUser user = userOptional.get();
-            user.setPassword(newPassword); 
+            user.setPassword(BCrypt.hashpw(newPassword, salt)); 
             userRepository.save(user);   
             return user; // Return the updated user
         }
