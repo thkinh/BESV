@@ -13,7 +13,6 @@ import com.example.spring_api.API.Model.AppUser;
 import com.example.spring_api.API.Model.Pothole;
 import com.example.spring_api.API.Model.PotholeDetails;
 import com.example.spring_api.API.Model.PotholeProjection;
-import com.example.spring_api.API.Model.UserDetails;
 import com.example.spring_api.API.Repository.PotholeRepository;
 import com.example.spring_api.API.Repository.UserRepository;
 import com.example.spring_api.API.Util.ImageUtils;
@@ -60,7 +59,43 @@ public class PotholeService {
                 .orElseThrow(() -> new RuntimeException("No pothole found at the given location"));
     }
 
+    @Transactional
+    public PotholeDetails updatePotholeDetails(Integer potholeId, PotholeDetails newDetails) {
+        Optional<Pothole> potholeOpt = potholeRepository.findById(potholeId);
+        
+        if (potholeOpt.isPresent()) {
+            Pothole pothole = potholeOpt.get();
+            PotholeDetails currentDetails = pothole.getDetails();
+            
+            // Update values in the existing PotholeDetails entity
+            if (newDetails.getAccel_sd_z() != null) {
+                currentDetails.setAccel_sd_z(newDetails.getAccel_sd_z());
+            }
+            if (newDetails.getAccel_mean_z() != null) {
+                currentDetails.setAccel_mean_z(newDetails.getAccel_mean_z());
+            }
+            if (newDetails.getAccel_var_z() != null) {
+                currentDetails.setAccel_var_z(newDetails.getAccel_var_z());
+            }
+            if (newDetails.getDepth() != null) {
+                currentDetails.setDepth(newDetails.getDepth());
+            }
+            if (newDetails.getWidth() != null) {
+                currentDetails.setWidth(newDetails.getWidth());
+            }
+            if (newDetails.getIsConfirmed() != null) {
+                currentDetails.setIsConfirmed(newDetails.getIsConfirmed());
+            }
 
+            // Save the updated details back into the Pothole
+            pothole.setDetails(currentDetails);
+            potholeRepository.save(pothole);
+            
+            return currentDetails; // Return the updated details
+        } else {
+            return null; // Return null if Pothole is not found
+        }
+    }
 
     public List<Pothole> getAllPotholes(){
         return potholeRepository.findAll();

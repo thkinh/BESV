@@ -4,19 +4,17 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.spring_api.API.Model.AppUser;
 import com.example.spring_api.API.Model.Pothole;
+import com.example.spring_api.API.Model.PotholeDetails;
 import com.example.spring_api.API.Model.PotholeProjection;
-import com.example.spring_api.API.Model.UserDetails;
 import com.example.spring_api.API.Service.PotholeService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,6 +31,29 @@ public class PotholeController {
         this.potholeService = potholeService;
     }
 
+
+    @GetMapping("get/details")
+    public ResponseEntity<PotholeDetails> getMethodName(@RequestParam Integer id) {
+        Optional<Pothole> pothole = potholeService.getPothole(id);
+        if (pothole.isEmpty()) {
+            return ResponseEntity.status(504).body(null);
+        }
+        PotholeDetails details = pothole.get().getDetails();
+        return ResponseEntity.status(200).body(details);
+    }
+    
+    @PostMapping("/updateDetails")
+    public ResponseEntity<PotholeDetails> updatePotholeDetails(
+            @RequestParam("id") Integer potholeId, 
+            @RequestBody PotholeDetails potholeDetails) {
+        
+        PotholeDetails updatedDetails = potholeService.updatePotholeDetails(potholeId, potholeDetails);
+        if (updatedDetails != null) {
+            return ResponseEntity.ok(updatedDetails);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
 
     @PostMapping("/uploadImage")
     public ResponseEntity<String> uploadProfileImage(
