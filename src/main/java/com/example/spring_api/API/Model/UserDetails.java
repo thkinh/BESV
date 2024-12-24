@@ -5,11 +5,14 @@ import java.sql.Date;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
@@ -21,11 +24,27 @@ public class UserDetails {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
+    public Integer getId() {
+        return id;
+    }
     @OneToOne(mappedBy = "details")
     @JsonBackReference
     @JsonIgnore
     private AppUser thisAppUser;
 
+     // Field for storing the image as binary data
+    @Lob
+    @Column(name = "profile_image", nullable = true, length = 2000)
+    @JsonIgnore
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] profileImage;
+
+    public byte[] getProfileImage() {
+        return profileImage;
+    }
+    public void setProfileImage(byte[] profileImage) {
+        this.profileImage = profileImage;
+    }
     public AppUser getThisAppUser() {
         return thisAppUser;
     }

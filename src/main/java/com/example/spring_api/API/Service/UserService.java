@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.spring_api.API.Model.AppUser;
 import com.example.spring_api.API.Model.UnverifiedUser;
@@ -50,6 +51,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    @Transactional
     public Optional<AppUser> getUserByEmail(String email){
         return userRepository.findByEmail(email);
     }
@@ -66,6 +68,7 @@ public class UserService {
         return 0;
     }
 
+    @Transactional
     public AppUser addUser(AppUser user) {
         user.setPassword(BCrypt.hashpw(user.getPassword(), salt));
         return userRepository.save(user); // Save user to the database

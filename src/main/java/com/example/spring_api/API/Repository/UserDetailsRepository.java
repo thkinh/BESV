@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 
 import com.example.spring_api.API.Model.UserDetails;
 
+import jakarta.transaction.Transactional;
+
 @Repository
 public interface UserDetailsRepository extends JpaRepository<UserDetails, Integer >{
     
@@ -18,6 +20,7 @@ public interface UserDetailsRepository extends JpaRepository<UserDetails, Intege
 
 
     @Modifying
+    @Transactional
     @Query("UPDATE UserDetails u SET u.email = :email, u.phoneNumber = :phoneNumber, " +
         "u.dateOfBirth = :dateOfBirth, u.jobTitle = :jobTitle, u.fullName = :fullName " +
         "WHERE u.id = :id")

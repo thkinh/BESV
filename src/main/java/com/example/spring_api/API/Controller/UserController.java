@@ -1,6 +1,7 @@
 package com.example.spring_api.API.Controller;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.spring_api.API.Model.AppUser;
 import com.example.spring_api.API.Model.UnverifiedUser;
@@ -10,6 +11,7 @@ import com.example.spring_api.API.Service.RandomGenerator;
 import com.example.spring_api.API.Service.UserDetailsService;
 import com.example.spring_api.API.Service.UserService;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +38,34 @@ public class UserController {
         this.userService = userService;
         this.mailService = mailService;
         this.userDetailsService = userDetailsService;
+    }
+
+
+
+    @GetMapping("/details/profileImage")
+    public ResponseEntity<byte[]> getProfileImage(@RequestParam Integer id) {
+        Optional<AppUser> user = userService.getUserByID(id);
+        if (user.isEmpty()) {
+            return ResponseEntity.status(501).body(null);
+        }
+        UserDetails details = user.get().getDetails();
+        byte[] image = userDetailsService.getImage(details.getId());
+        if (image == null) {
+            return ResponseEntity.status(504).header("Content-Type", "image/jpeg").body(image);    
+        }
+        return ResponseEntity.ok().header("Content-Type", "image/jpeg").body(image);
+    }
+    
+    @PostMapping("details/uploadImage")
+    public ResponseEntity<String> uploadProfileImage(
+            @RequestParam Integer id,
+            @RequestParam("imageFile") MultipartFile file) {
+        try {
+            userDetailsService.uploadImage(id, file);
+            return ResponseEntity.ok("Image uploaded successfully.");
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Failed to upload image.");
+        }
     }
 
     @GetMapping("/details")
@@ -66,7 +96,7 @@ public class UserController {
         }
     }
     
-    
+  
 
 
     @GetMapping("/getByEmail") //return app user, used by old login
@@ -79,8 +109,6 @@ public class UserController {
             return ResponseEntity.status(504).body(null);
         }
     }
-
-
 
     @PostMapping("/updateDistance")
     public ResponseEntity<Integer> postMethodName(@RequestParam(name ="id") Integer id, @RequestParam(name = "distance") Long distance) {

@@ -1,14 +1,19 @@
 package com.example.spring_api.API.Service;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.spring_api.API.Model.AppUser;
 import com.example.spring_api.API.Model.UserDetails;
 import com.example.spring_api.API.Repository.UserDetailsRepository;
 import com.example.spring_api.API.Repository.UserRepository;
+import com.example.spring_api.API.Util.ImageUtils;
+
 
 @Service
 public class UserDetailsService {
@@ -30,6 +35,7 @@ public class UserDetailsService {
 
         // Check if the AppUser already has associated UserDetails
         if (appUser.getDetails() == null) {
+            appUser.setDetails(new UserDetails());
             // If no UserDetails exist for this user, create a new UserDetails and associate it
             details.setThisAppUser(appUser);
         } 
@@ -57,4 +63,32 @@ public class UserDetailsService {
             details.getFullName()
             );
     }
+    
+    public UserDetails uploadImage(Integer userId, MultipartFile file) throws IOException {
+        Optional<AppUser> appUser = appUserRepository.findById(userId);
+        if (appUser.isEmpty()) {
+            throw new RuntimeException("AppUser not found");
+        }
+        Optional<UserDetails> userDetails = userDetailsRepository.findById(appUser.get().getDetails().getId());
+        if (userDetails.isEmpty()) {
+            throw  new RuntimeException("User not found with id: " + userId);
+        }
+
+        byte[] compressedImage = ImageUtils.compressImage(file.getBytes());
+        userDetails.get().setProfileImage(compressedImage);
+
+        return userDetailsRepository.save(userDetails.get());
+    }
+
+
+    @Transactional
+    public byte[] getImage(Integer dtId) {
+        UserDetails userDetails = userDetailsRepository.findById(dtId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + dtId));
+
+        byte[] decompressedImage = ImageUtils.decompressImage(userDetails.getProfileImage());
+        return decompressedImage;
+    }
+
+
 }
