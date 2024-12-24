@@ -1,6 +1,12 @@
 package com.example.spring_api.API.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Lob;
 
 @Embeddable
 public class PotholeDetails {
@@ -11,6 +17,21 @@ public class PotholeDetails {
     private Long Depth;
     private Long Width;
     private Boolean isConfirmed;
+    
+    @Lob
+    @Column(name = "image", nullable = true, length = 2000)
+    @Basic(fetch = FetchType.LAZY)
+    @JsonIgnore // Prevents the image from being sent in every JSON response
+    private byte[] image;
+
+    
+
+    public byte[] getImage() {
+        return image;
+    }
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
     public Long getAccel_var_z() {
         return accel_var_z;
     }

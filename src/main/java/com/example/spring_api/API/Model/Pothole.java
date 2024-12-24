@@ -3,9 +3,14 @@ import java.sql.Date;
 
 import java.sql.Time;
 
+import org.hibernate.annotations.NaturalId;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -31,8 +36,13 @@ public class Pothole {
     
 
     @Embedded
+    @AttributeOverride(name = "latitude", column = @Column(nullable = false))
+    @AttributeOverride(name = "longitude", column = @Column(nullable = false))
+    @NaturalId 
     private Location location;
+    
     @Embedded
+    @JsonIgnore
     private PotholeDetails details;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -99,10 +109,24 @@ public class Pothole {
 
     @Embeddable
     public static class Location {
+
+        @Column(nullable = false)
         private Double latitude;
+        @Column(nullable = false)
         private Double longitude;
+
+
         private String country;
         private String city;
+        private String street;
+
+        public String getStreet() {
+            return street;
+        }
+
+        public void setStreet(String street) {
+            this.street = street;
+        }
 
         public Double getLatitude() {
             return latitude;

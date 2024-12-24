@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.spring_api.API.Model.AppUser;
@@ -19,6 +20,10 @@ public interface PotholeRepository extends JpaRepository<Pothole, Integer> {
     List<Pothole> findByLocation(Location location);;
     Optional<Pothole> findById(Integer id);
     List<Pothole> findByAppUser(AppUser userfound);
+
+    @Query("SELECT p FROM Pothole p WHERE p.location.latitude = :latitude AND p.location.longitude = :longitude")
+    Optional<Pothole> findByLatitudeAndLongitude(@Param("latitude") Double latitude, @Param("longitude") Double longitude);
+
 
     @Query("SELECT p.id AS id, p.dateFound AS dateFound, p.timeFound AS timeFound, " +
            "p.severity AS severity, p.location AS location, p.appUser.id AS userId " +
