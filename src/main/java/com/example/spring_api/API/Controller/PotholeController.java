@@ -7,13 +7,16 @@ import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.spring_api.API.Model.AppUser;
 import com.example.spring_api.API.Model.Pothole;
 import com.example.spring_api.API.Model.PotholeProjection;
+import com.example.spring_api.API.Model.UserDetails;
 import com.example.spring_api.API.Service.PotholeService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,6 +45,16 @@ public class PotholeController {
             return ResponseEntity.status(500).body("Failed to upload image.");
         }
     }
+
+    @GetMapping("/image")
+    public ResponseEntity<byte[]> getPotholeImage(@RequestParam Integer id) {
+        byte[] image = potholeService.getPHImage(id);
+        if (image == null) {
+            return ResponseEntity.status(504).body(null);
+        }
+        return ResponseEntity.ok().header("Content-Type", "image/jpeg").body(image);
+    }
+
     @GetMapping("get-singlePH")
     public ResponseEntity<Pothole> getPothole(@RequestParam(name = "id") Integer id){
         Optional<Pothole> pothole = potholeService.getPothole(id);

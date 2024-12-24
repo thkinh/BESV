@@ -6,12 +6,14 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.spring_api.API.Model.AppUser;
 import com.example.spring_api.API.Model.Pothole;
 import com.example.spring_api.API.Model.PotholeDetails;
 import com.example.spring_api.API.Model.PotholeProjection;
+import com.example.spring_api.API.Model.UserDetails;
 import com.example.spring_api.API.Repository.PotholeRepository;
 import com.example.spring_api.API.Repository.UserRepository;
 import com.example.spring_api.API.Util.ImageUtils;
@@ -28,7 +30,8 @@ public class PotholeService {
         this.userRepository = appUserRepository;
     }
 
-    public void uploadPotholeImage(Integer potholeId, MultipartFile file) throws IOException {
+    @Transactional
+    public Pothole uploadPotholeImage(Integer potholeId, MultipartFile file) throws IOException {
         Optional<Pothole> potholeOpt = potholeRepository.findById(potholeId);
         if (potholeOpt.isEmpty()) {
             throw new RuntimeException("Pothole not found with id: " + potholeId);
@@ -40,7 +43,16 @@ public class PotholeService {
             pothole.setDetails(new PotholeDetails());
         }
         pothole.getDetails().setImage(compressedImage);
-        potholeRepository.save(pothole);
+        return potholeRepository.save(pothole);
+    }
+
+    @Transactional
+    public byte[] getPHImage(Integer id) {
+        Pothole pothole = potholeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+
+        byte[] decompressedImage = ImageUtils.decompressImage(pothole.getDetails().getImage());
+        return decompressedImage;
     }
 
     public Pothole getPotholeByLocation(Double latitude, Double longitude) {

@@ -17,11 +17,10 @@ public class PotholeDetails {
     private Long Depth;
     private Long Width;
     private Boolean isConfirmed;
-    
+
     @Lob
     @Column(name = "image", nullable = true, length = 2000)
-    @Basic(fetch = FetchType.LAZY)
-    @JsonIgnore // Prevents the image from being sent in every JSON response
+    @Basic(fetch = FetchType.LAZY, optional = true)
     private byte[] image;
 
     
