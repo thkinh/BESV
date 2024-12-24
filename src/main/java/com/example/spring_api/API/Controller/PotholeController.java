@@ -42,7 +42,6 @@ public class PotholeController {
             return ResponseEntity.status(500).body("Failed to upload image.");
         }
     }
-
     @GetMapping("get-singlePH")
     public ResponseEntity<Pothole> getPothole(@RequestParam(name = "id") Integer id){
         Optional<Pothole> pothole = potholeService.getPothole(id);
