@@ -12,10 +12,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.spring_api.API.Model.AppUser;
 import com.example.spring_api.API.Model.Pothole;
 import com.example.spring_api.API.Model.PotholeDetails;
 import com.example.spring_api.API.Model.PotholeProjection;
 import com.example.spring_api.API.Service.PotholeService;
+import com.example.spring_api.API.Service.UserService;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -25,9 +28,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class PotholeController {
     
     private final PotholeService potholeService;
+    private final UserService userService;
 
-    public PotholeController(PotholeService potholeService)
+    public PotholeController(PotholeService potholeService, UserService userService)
     {
+        this.userService = userService;
         this.potholeService = potholeService;
     }
 
@@ -106,11 +111,13 @@ public class PotholeController {
     }
 
     @GetMapping("get")
-    public ResponseEntity<List<Pothole>> getPothole(@RequestParam(name = "user") String username){
-        List<Pothole> potholes = potholeService.getPotholesByUsername(username);
+    public ResponseEntity<List<PotholeProjection>> getPothole(@RequestParam(name = "user") String username){
+        Optional<AppUser> user = userService.getUserByUsername(username);
+        
+        if (user.isPresent()) {
 
-        if (!potholes.isEmpty()) {
-            return ResponseEntity.ok(potholes);
+            List<PotholeProjection> potholes = potholeService.getPotholesByUserId(user.get().getId()); 
+            return ResponseEntity.status(504).body(potholes);    
         }
         return ResponseEntity.status(504).body(null);
     }

@@ -29,4 +29,10 @@ public interface PotholeRepository extends JpaRepository<Pothole, Integer> {
            "p.severity AS severity, p.location AS location, p.appUser.id AS userId " +
            "FROM Pothole p")
     List<PotholeProjection> findAllWithUserId();
+
+    @Query("SELECT p.id AS id, p.dateFound AS dateFound, p.timeFound AS timeFound, " +
+       "p.severity AS severity, p.location AS location, p.appUser.id AS userId " +
+       "FROM Pothole p WHERE p.appUser.id = :userId")
+    List<PotholeProjection> findAllByUserId(@Param("userId") Integer userId);
+
 }  

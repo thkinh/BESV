@@ -99,16 +99,6 @@ public class UserController {
   
 
 
-    @GetMapping("/getByEmail") //return app user, used by old login
-    public ResponseEntity<AppUser> getMethodName(@RequestParam(name = "email") String email) {
-        Optional<AppUser> user = userService.getUserByEmail(email);
-        if (user.isPresent()) {
-            return ResponseEntity.ok(user.get());
-        }
-        else{
-            return ResponseEntity.status(504).body(null);
-        }
-    }
 
     @PostMapping("/updateDistance")
     public ResponseEntity<Integer> postMethodName(@RequestParam(name ="id") Integer id, @RequestParam(name = "distance") Long distance) {
@@ -122,6 +112,16 @@ public class UserController {
         return ResponseEntity.status(504).body(null);
     }
     
+    @GetMapping("/getByEmail") //return app user, used by old login
+    public ResponseEntity<AppUser> getMethodName(@RequestParam(name = "email") String email) {
+        Optional<AppUser> user = userService.getUserByEmail(email);
+        if (user.isPresent()) {
+            return ResponseEntity.ok(user.get());
+        }
+        else{
+            return ResponseEntity.status(504).body(null);
+        }
+    }
 
 
     @GetMapping("/getByName") //return app user, used for ez get method

@@ -52,6 +52,7 @@ public class UserDetails {
         this.thisAppUser = thisAppUser;
     }
     @Column(unique = true)    
+    @JsonIgnore
     private String email;
     private String phoneNumber;
     private Date dateOfBirth;

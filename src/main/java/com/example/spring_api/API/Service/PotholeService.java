@@ -59,6 +59,8 @@ public class PotholeService {
                 .orElseThrow(() -> new RuntimeException("No pothole found at the given location"));
     }
 
+    
+
     @Transactional
     public PotholeDetails updatePotholeDetails(Integer potholeId, PotholeDetails newDetails) {
         Optional<Pothole> potholeOpt = potholeRepository.findById(potholeId);
@@ -103,6 +105,10 @@ public class PotholeService {
 
     public List<PotholeProjection> getALLPotholesWithID(){
         return potholeRepository.findAllWithUserId();
+    }
+
+    public List<PotholeProjection> getPotholesByUserId(Integer userId) {
+        return potholeRepository.findAllByUserId(userId);
     }
 
     public Optional<Pothole> getPothole(Integer id) {

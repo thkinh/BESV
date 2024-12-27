@@ -56,6 +56,7 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
+    @Transactional
     public Optional<AppUser> getUserByUsername(String username){
         return userRepository.findByUsername(username);
     }
