@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -72,6 +73,23 @@ public class PotholeController {
         }
     }
 
+    @DeleteMapping("/deleteDuplicate")
+    public ResponseEntity<String> deleteDuplicate(@RequestParam Integer id){
+        try{
+            Optional<Pothole> pothole = potholeService.getPothole(id);
+            if (pothole.isPresent()) {
+                potholeService.DeletePothole(id);
+                return ResponseEntity.ok("Nice");
+            }
+            else{
+                return ResponseEntity.status(501).body("Pothole doesn't exist");
+            }
+        }
+        catch(Exception e){
+            return ResponseEntity.status(502).body("Failed to delte pothole");
+        }
+    }
+
     @GetMapping("/image")
     public ResponseEntity<byte[]> getPotholeImage(@RequestParam Integer id) {
         byte[] image = potholeService.getPHImage(id);
@@ -115,9 +133,8 @@ public class PotholeController {
         Optional<AppUser> user = userService.getUserByUsername(username);
         
         if (user.isPresent()) {
-
             List<PotholeProjection> potholes = potholeService.getPotholesByUserId(user.get().getId()); 
-            return ResponseEntity.status(504).body(potholes);    
+            return ResponseEntity.status(200).body(potholes);    
         }
         return ResponseEntity.status(504).body(null);
     }

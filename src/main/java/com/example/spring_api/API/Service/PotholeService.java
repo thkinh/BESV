@@ -115,6 +115,10 @@ public class PotholeService {
         return potholeRepository.findById(id);
     }
     
+    public void DeletePothole(Integer id){
+        potholeRepository.deleteByIdCustom(id);
+    }
+
     public Pothole addPothole(Pothole pothole)
     {
         return potholeRepository.save(pothole);
