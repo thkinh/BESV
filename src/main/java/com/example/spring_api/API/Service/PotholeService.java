@@ -48,10 +48,17 @@ public class PotholeService {
     @Transactional
     public byte[] getPHImage(Integer id) {
         Pothole pothole = potholeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException("Pothole not found with id: " + id));
 
-        byte[] decompressedImage = ImageUtils.decompressImage(pothole.getDetails().getImage());
-        return decompressedImage;
+        // Check if details or image is null
+        if (pothole.getDetails() == null || pothole.getDetails().getImage() == null) {
+            return null; // Return null if no image is stored
+        }
+
+        byte[] storedImage = pothole.getDetails().getImage();
+
+        // Decompress and return the stored image
+        return ImageUtils.decompressImage(storedImage);
     }
 
     public Pothole getPotholeByLocation(Double latitude, Double longitude) {

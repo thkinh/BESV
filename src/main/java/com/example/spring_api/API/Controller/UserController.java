@@ -46,15 +46,23 @@ public class UserController {
     public ResponseEntity<byte[]> getProfileImage(@RequestParam Integer id) {
         Optional<AppUser> user = userService.getUserByID(id);
         if (user.isEmpty()) {
+            // Return 501 if the user is not found
             return ResponseEntity.status(501).body(null);
         }
         UserDetails details = user.get().getDetails();
-        byte[] image = userDetailsService.getImage(details.getId());
-        if (image == null) {
-            return ResponseEntity.status(504).header("Content-Type", "image/jpeg").body(image);    
+        // Handle null details gracefully
+        if (details == null) {
+            return ResponseEntity.status(504).header("Content-Type", "image/jpeg").body(null);
         }
+        byte[] image = userDetailsService.getImage(details.getId());
+        // Handle null profile image gracefully
+        if (image == null) {
+            return ResponseEntity.status(504).header("Content-Type", "image/jpeg").body(null);
+        }
+        // Return the profile image with appropriate content type
         return ResponseEntity.ok().header("Content-Type", "image/jpeg").body(image);
     }
+
     
     @PostMapping("details/uploadImage")
     public ResponseEntity<String> uploadProfileImage(

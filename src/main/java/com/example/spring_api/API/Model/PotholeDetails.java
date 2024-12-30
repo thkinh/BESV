@@ -11,6 +11,10 @@ import jakarta.persistence.Lob;
 @Embeddable
 public class PotholeDetails {
     
+    public PotholeDetails(){
+        
+    }
+
     private Double  accel_var_z;
     public Double getAccel_var_z() {
         return accel_var_z;

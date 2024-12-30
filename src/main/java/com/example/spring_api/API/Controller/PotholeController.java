@@ -107,10 +107,16 @@ public class PotholeController {
     @GetMapping("/image")
     public ResponseEntity<byte[]> getPotholeImage(@RequestParam Integer id) {
         byte[] image = potholeService.getPHImage(id);
+
         if (image == null) {
+            // Return 504 when the image is not available
             return ResponseEntity.status(504).body(null);
         }
-        return ResponseEntity.ok().header("Content-Type", "image/jpeg").body(image);
+
+        // Return the image with appropriate content type
+        return ResponseEntity.ok()
+                .header("Content-Type", "image/jpeg")
+                .body(image);
     }
 
     @GetMapping("get-singlePH")
@@ -156,8 +162,6 @@ public class PotholeController {
     @PostMapping("add")
     public ResponseEntity<Pothole> addPothole(@RequestBody Pothole pothole) {
         try {
-            PotholeDetails potholeDetails = pothole.getDetails();
-            potholeDetails.setImage(new byte[1]);
             Pothole pothole2 = potholeService.addPothole(pothole);
             return ResponseEntity.ok(pothole2);
         }

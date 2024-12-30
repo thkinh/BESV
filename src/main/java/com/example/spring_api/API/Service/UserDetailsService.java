@@ -84,11 +84,17 @@ public class UserDetailsService {
     @Transactional
     public byte[] getImage(Integer dtId) {
         UserDetails userDetails = userDetailsRepository.findById(dtId)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + dtId));
-
-        byte[] decompressedImage = ImageUtils.decompressImage(userDetails.getProfileImage());
-        return decompressedImage;
+                .orElseThrow(() -> new RuntimeException("User details not found with id: " + dtId));
+    
+        // Check if the profile image is null
+        if (userDetails.getProfileImage() == null) {
+            return null; // Return null if no profile image is stored
+        }
+    
+        // Decompress and return the profile image
+        return ImageUtils.decompressImage(userDetails.getProfileImage());
     }
+    
 
 
 }
