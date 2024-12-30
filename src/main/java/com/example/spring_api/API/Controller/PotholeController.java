@@ -90,6 +90,20 @@ public class PotholeController {
         }
     }
 
+    @DeleteMapping("/deleteDuplicateByLL")
+    public ResponseEntity<String> deleteDuplicateLL(@RequestParam Double latitude,@RequestParam Double longitude){
+        try{
+            Pothole pothole = potholeService.getPotholeByLocation(latitude, longitude);
+            
+            potholeService.DeletePothole(pothole.getId());
+            return ResponseEntity.ok("Nice");
+            
+        }
+        catch(Exception e){
+            return ResponseEntity.status(502).body("Failed to delete pothole");
+        }
+    }
+
     @GetMapping("/image")
     public ResponseEntity<byte[]> getPotholeImage(@RequestParam Integer id) {
         byte[] image = potholeService.getPHImage(id);
@@ -142,6 +156,8 @@ public class PotholeController {
     @PostMapping("add")
     public ResponseEntity<Pothole> addPothole(@RequestBody Pothole pothole) {
         try {
+            PotholeDetails potholeDetails = pothole.getDetails();
+            potholeDetails.setImage(new byte[1]);
             Pothole pothole2 = potholeService.addPothole(pothole);
             return ResponseEntity.ok(pothole2);
         }
